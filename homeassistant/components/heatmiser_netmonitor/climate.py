@@ -40,15 +40,10 @@ class HeatmiserClimate(ClimateEntity):
 
     def __init__(self, stat: HeatmiserStat, hub: HeatmiserHub) -> None:
         """Set up Heatmiser climate entity based on a stat."""
-        self._supported_features = SUPPORT_TARGET_TEMPERATURE
-        self._attr_hvac_modes = {HVAC_MODE_HEAT, HVAC_MODE_OFF}
+        self._attr_supported_features = SUPPORT_TARGET_TEMPERATURE
+        self._attr_hvac_modes = [HVAC_MODE_HEAT, HVAC_MODE_OFF]
         self.stat = stat
         self.hub = hub
-
-    @property
-    def supported_features(self):
-        """Return the list of supported features."""
-        return self._supported_features
 
     @property
     def name(self):
