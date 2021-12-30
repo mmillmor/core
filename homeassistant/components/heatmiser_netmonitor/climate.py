@@ -98,8 +98,9 @@ class HeatmiserClimate(ClimateEntity):
     async def async_update(self) -> None:
         """Retrieve latest state."""
         new_stat_state = await self.hub.get_device_status_async(self.stat.name)
-        new_stat_state.id = self.stat.id
-        self.stat = new_stat_state
+        if new_stat_state.current_temperature != None:
+            new_stat_state.id = self.stat.id
+            self.stat = new_stat_state
 
     @property
     def device_info(self):
