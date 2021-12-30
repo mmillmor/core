@@ -2,10 +2,12 @@
   "config": {
     "step": {
       "user": {
+        "title": "Setup Heatmiset NetMonitor",
+        "description": "Enter the IP address of your NetMonitor. It should look like this: 192.168.0.168.",
         "data": {
-          "host": "[%key:common::config_flow::data::host%]",
-          "username": "[%key:common::config_flow::data::username%]",
-          "password": "[%key:common::config_flow::data::password%]"
+          "host": "Host IP address",
+          "username": "Username",
+          "password": "Password"
         }
       }
     },
@@ -16,6 +18,19 @@
     },
     "abort": {
       "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Edit Heatmiset NetMonitor settings",
+        "description": "Enter the IP address of your NetMonitor. It should look like this: 192.168.0.168.",
+        "data": {
+          "host": "Host IP address",
+          "username": "Username",
+          "password": "Password"
+        }
+      }
     }
   }
 }
