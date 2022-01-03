@@ -1,5 +1,5 @@
 from __future__ import annotations
-from homeassistant.components.geo_home.geohome import GeoHomeHub
+from .geohome import GeoHomeHub
 import logging
 import async_timeout
 
@@ -32,7 +32,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     hub = GeoHomeHub(username, password, hass)
 
     async def async_update_data():
-        async with async_timeout.timeout(300):
+        async with async_timeout.timeout(30):
             return await hub.get_device_data()
 
     coordinator = DataUpdateCoordinator(
@@ -59,15 +59,11 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 
 class GeoHomeGasSensor(CoordinatorEntity, SensorEntity):
     def __init__(self, coordinator: CoordinatorEntity, hub: GeoHomeHub):
-        super().__init__(coordinator)
         self.hub = hub
-        self.entity_description: SensorEntityDescription(
-            key="totalgas",
-            device_class=SensorDeviceClass.ENERGY,
-            native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
-            state_class=SensorStateClass.TOTAL,
-            name="Total Gas",
-        )
+        self._attr_device_class = SensorDeviceClass.ENERGY
+        self._attr_state_class = SensorStateClass.TOTAL
+        self._attr_native_unit_of_measurement = ENERGY_KILO_WATT_HOUR
+        super().__init__(coordinator)
 
     @property
     def name(self):
@@ -77,7 +73,7 @@ class GeoHomeGasSensor(CoordinatorEntity, SensorEntity):
     @property
     def unique_id(self):
         """Return the unique id of the sensor."""
-        return "geo_home_gas"
+        return "geo_home_gas_total"
 
     @property
     def native_value(self):
@@ -85,14 +81,13 @@ class GeoHomeGasSensor(CoordinatorEntity, SensorEntity):
         return self.hub.gasReading
 
     @property
-    def native_unit_of_measurement(self):
-        """Return the state of the sensor."""
-        return "kWh"
-
-    @property
     def icon(self):
         """Icon to use in the frontend, if any."""
         return "mdi:fire"
+
+    @property
+    def last_reset(self):
+        return None
 
 
 class GeoHomeGasPriceSensor(CoordinatorEntity, SensorEntity):
@@ -131,13 +126,8 @@ class GeoHomeElectricitySensor(CoordinatorEntity, SensorEntity):
     def __init__(self, coordinator: CoordinatorEntity, hub: GeoHomeHub):
         super().__init__(coordinator)
         self.hub = hub
-        self.entity_description: SensorEntityDescription(
-            key="totalelectricity",
-            device_class=SensorDeviceClass.ENERGY,
-            native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
-            state_class=SensorStateClass.TOTAL,
-            name="Total Electricity",
-        )
+        self._attr_device_class = SensorDeviceClass.MONETARY
+        self._attr_state_class = SensorStateClass.MEASUREMENT
 
     @property
     def name(self):
@@ -147,7 +137,7 @@ class GeoHomeElectricitySensor(CoordinatorEntity, SensorEntity):
     @property
     def unique_id(self):
         """Return the unique id of the sensor."""
-        return "geo_home_electricity"
+        return "geo_home_electricity_total"
 
     @property
     def native_value(self):
@@ -155,26 +145,21 @@ class GeoHomeElectricitySensor(CoordinatorEntity, SensorEntity):
         return self.hub.electricityReading
 
     @property
-    def native_unit_of_measurement(self):
-        """Return the state of the sensor."""
-        return "kWh"
-
-    @property
     def icon(self):
         """Icon to use in the frontend, if any."""
         return "mdi:flash"
+
+    @property
+    def last_reset(self):
+        return None
 
 
 class GeoHomeElectricityPriceSensor(CoordinatorEntity, SensorEntity):
     def __init__(self, coordinator: CoordinatorEntity, hub: GeoHomeHub):
         super().__init__(coordinator)
         self.hub = hub
-        self.entity_description: SensorEntityDescription(
-            key="electricityprice",
-            device_class=SensorDeviceClass.MONETARY,
-            state_class=SensorStateClass.MEASUREMENT,
-            name="Electricity Price",
-        )
+        self._attr_device_class = SensorDeviceClass.MONETARY
+        self._attr_state_class = SensorStateClass.MEASUREMENT
 
     @property
     def name(self):
